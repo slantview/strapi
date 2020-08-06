@@ -86,14 +86,22 @@ module.exports = {
 const slugify = require('slugify');
 
 module.exports = {
-  beforeSave: async (model, attrs, options) => {
-    if (options.method === 'insert' && attrs.title) {
-      model.set('slug', slugify(attrs.title));
-    } else if (options.method === 'update' && attrs.title) {
-      attrs.slug = slugify(attrs.title);
+    lifecycles: {
+        beforeUpdate: async (params, data) => {
+            data.slug = '/' + slugify(data.title, {
+                replacement: '-', 
+                lower: true,
+            });
+        },
+        beforeCreate: async (data) => {
+            data.slug = '/' + slugify(data.title, {
+                replacement: '-', 
+                lower: true,
+            });
+        },
     }
-  },
 };
+
 ```
 
 :::
